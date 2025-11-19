@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../core/router/app_router.dart';
 import '../../../common/themes/app_theme.dart';
 
@@ -52,9 +53,9 @@ class _CustomBottomAppBar extends StatelessWidget {
 
     final bgColor = bottomTheme?.background ?? Theme.of(context).colorScheme.surface;
     final iconSelected = bottomTheme?.iconSelected ?? Theme.of(context).colorScheme.primary;
-    final iconUnselected = bottomTheme?.iconUnselected ?? (Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey);
     final textSelected = bottomTheme?.textSelected ?? Theme.of(context).colorScheme.primary;
-    final textUnselected = bottomTheme?.textUnselected ?? (Theme.of(context).textTheme.bodySmall?.color ?? Colors.grey);
+    final textUnselected = bottomTheme?.textUnselected ?? const Color(0x99FFFFFF);
+    final iconUnselected = bottomTheme?.iconUnselected ?? textUnselected;
     final shadowColor = bottomTheme?.shadowColor ?? Colors.black.withValues(alpha: 0.06);
     final blurSigma = bottomTheme?.blurSigma ?? 12.0;
     final barHeight = bottomTheme?.height ?? 80.0;
@@ -132,14 +133,36 @@ class _CustomBottomAppBar extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16),
                               color: Colors.transparent,
                             ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
                               children: [
-                            Icon(
-                              selected ? selectedIcon : icon,
-                              color: selected ? iconSelected : iconUnselected,
-                              size: selected ? 22 : 20,
-                            ),
+                            Builder(builder: (_) {
+                              final s = selected ? 22.0 : 20.0;
+                              if (i == 0) {
+                                return SvgPicture.asset(
+                                  selected ? 'assets/icons/icon_home_selected.svg' : 'assets/icons/icon_home.svg',
+                                  width: s,
+                                  height: s,
+                                );
+                              } else if (i == 1) {
+                                return SvgPicture.asset(
+                                  selected ? 'assets/icons/icon_space_selected.svg' : 'assets/icons/icon_space.svg',
+                                  width: s,
+                                  height: s,
+                                );
+                              } else if (i == 2) {
+                                return SvgPicture.asset(
+                                  selected ? 'assets/icons/icon_me_selected.svg' : 'assets/icons/icon_me.svg',
+                                  width: s,
+                                  height: s,
+                                );
+                              }
+                              return Icon(
+                                selected ? selectedIcon : icon,
+                                color: selected ? iconSelected : iconUnselected,
+                                size: s,
+                              );
+                            }),
                                 const SizedBox(height: 4),
                                 Text(
                                   label,
