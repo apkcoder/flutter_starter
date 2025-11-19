@@ -41,7 +41,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: Colors.black,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -61,10 +61,12 @@ class _SplashPageState extends ConsumerState<SplashPage> {
                   ),
                 ],
               ),
-              child: Icon(
-                Icons.flash_on,
-                size: 60.sp,
-                color: Theme.of(context).colorScheme.primary,
+              child: Padding(
+                padding: EdgeInsets.all(16.w),
+                child: Image.asset(
+                  'assets/icons/app_icon.png',
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
             
@@ -72,7 +74,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
             
             // 应用名称
             Text(
-              'Flutter Rapid',
+              '芦笋提词器',
               style: TextStyle(
                 fontSize: 28.sp,
                 fontWeight: FontWeight.bold,
@@ -84,7 +86,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
             
             // 副标题
             Text(
-              '快速开发框架',
+              'LuSun Teleprompter',
               style: TextStyle(
                 fontSize: 16.sp,
                 color: Colors.white.withValues(alpha: 0.8),
