@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../core/router/app_router.dart';
 import '../../../core/storage/storage_manager.dart';
 
 /// 主页
@@ -17,207 +16,66 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   Map<String, dynamic>? userInfo;
-  
+
   @override
   void initState() {
     super.initState();
-    _loadUserInfo();
-  }
-  
-  /// 加载用户信息
-  void _loadUserInfo() {
     userInfo = StorageManager.getUserInfo();
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('首页'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _showLogoutDialog,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: false,
+            floating: false,
+            expandedHeight: 260.h,
+            backgroundColor: Colors.black,
+            automaticallyImplyLeading: false,
+            flexibleSpace: FlexibleSpaceBar(
+              background: _BannerHeader(),
+            ),
+          ),
+
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+              child: _PrimaryActions(),
+            ),
+          ),
+
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: _ShortcutRow(),
+            ),
+          ),
+
+          SliverToBoxAdapter(child: SizedBox(height: 16.h)),
+
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: _ScriptsSection(),
+            ),
           ),
         ],
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Card(
-                child: Padding(
-                  padding: EdgeInsets.all(16.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 30.r,
-                            backgroundColor: Theme.of(context).colorScheme.primary,
-                            child: Icon(
-                              Icons.person,
-                              size: 30.sp,
-                              color: Colors.white,
-                            ),
-                          ),
-                          SizedBox(width: 16.w),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  userInfo?['nickname'] ?? '未知用户',
-                                  style: Theme.of(context).textTheme.headlineSmall,
-                                ),
-                                SizedBox(height: 4.h),
-                                Text(
-                                  userInfo?['email'] ?? '',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 16.h),
-                      Text(
-                        '登录时间: ${_formatLoginTime()}',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            SliverToBoxAdapter(child: SizedBox(height: 24.h)),
-
-            SliverToBoxAdapter(
-              child: Text(
-                '功能模块',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-            ),
-
-            SliverToBoxAdapter(child: SizedBox(height: 16.h)),
-
-            SliverGrid(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16.w,
-                mainAxisSpacing: 16.h,
-                childAspectRatio: 1.2,
-              ),
-              delegate: SliverChildListDelegate([
-                _buildFeatureCard(
-                  icon: Icons.person_outline,
-                  title: '个人中心',
-                  subtitle: '查看个人信息',
-                  onTap: () {
-                    context.router.push(const ProfileRoute());
-                  },
-                ),
-                _buildFeatureCard(
-                  icon: Icons.settings_outlined,
-                  title: '系统设置',
-                  subtitle: '应用设置管理',
-                  onTap: () {
-                    context.router.push(const SettingsRoute());
-                  },
-                ),
-                _buildFeatureCard(
-                  icon: Icons.notifications_outlined,
-                  title: '消息通知',
-                  subtitle: '查看系统消息',
-                  onTap: () {
-                    context.router.push(const NotificationsRoute());
-                  },
-                ),
-                _buildFeatureCard(
-                  icon: Icons.help_outline,
-                  title: '帮助中心',
-                  subtitle: '使用帮助文档',
-                  onTap: () {
-                    context.router.push(const HelpRoute());
-                  },
-                ),
-              ]),
-            ),
-
-            SliverToBoxAdapter(child: SizedBox(height: 24.h)),
-
-            SliverToBoxAdapter(
-              child: Card(
-                child: Padding(
-                  padding: EdgeInsets.all(16.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Flutter Rapid Framework',
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      ),
-                      SizedBox(height: 8.h),
-                      Text(
-                        '🎯 高内聚，低耦合的模块化架构\n'
-                        '⚡ 配置即约定，快速开发\n'
-                        '🔧 插件化设计，易于扩展\n'
-                        '🚀 专注业务，屏蔽底层实现',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
   
-  /// 构建功能卡片
-  Widget _buildFeatureCard({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12.r),
-        child: Padding(
-          padding: EdgeInsets.all(16.w),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 32.sp,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              SizedBox(height: 12.h),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 4.h),
-              Text(
-                subtitle,
-                style: Theme.of(context).textTheme.bodySmall,
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
+  Widget _pill({required String text}) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(999.r),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(color: Colors.white70, fontSize: 12.sp),
       ),
     );
   }
@@ -246,33 +104,391 @@ class _HomePageState extends ConsumerState<HomePage> {
     }
   }
   
-  /// 显示退出登录对话框
-  void _showLogoutDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('退出登录'),
-        content: const Text('确定要退出登录吗？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('取消'),
+}
+
+class _BannerHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFF0C0F10),
+            const Color(0xFF0C0F10),
+          ],
+        ),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 12.h),
+          child: SizedBox(
+            height: 160.h,
+            width: double.infinity,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final tipsWidth = 185.w;
+                final tipsHeight = 80.h;
+                final personWidth = 200.w;
+                final personHeight = 152.h;
+                return Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                      left: 0,
+                      top: 16.h,
+                      width: tipsWidth,
+                      height: tipsHeight,
+                      child: Image.asset(
+                        'assets/images/img_home_tips.png',
+                        fit: BoxFit.contain,
+                        alignment: Alignment.centerLeft,
+                      ),
+                    ),
+                    Positioned(
+                      right: 8.w,
+                      top: 16.h,
+                      width: personWidth,
+                      height: personHeight,
+                      child: Image.asset(
+                        'assets/images/img_home_people.png',
+                        fit: BoxFit.contain,
+                        alignment: Alignment.topRight,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
-          TextButton(
-            onPressed: () async {
-              Navigator.of(context).pop();
-              // 清除用户数据
-              await StorageManager.clearToken();
-              await StorageManager.clearUserInfo();
-              // 跳转到登录页
-              if (mounted) {
-                context.router.replace(const LoginRoute());
-              }
-            },
-            child: const Text('确定'),
+        ),
+      ),
+    );
+  }
+}
+
+class _HeaderTag extends StatelessWidget {
+  final String text;
+  const _HeaderTag({required this.text});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(999.r),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(color: Colors.white70, fontSize: 12.sp),
+      ),
+    );
+  }
+}
+
+class _PrimaryActions extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final primaryColor = const Color(0xFF31D790);
+    return Row(
+      children: [
+        Expanded(
+          child: _ActionTile(
+            height: 150.h,
+            color: primaryColor,
+            title: '开始拍摄',
+            subtitle: '即刻开启高效提词',
+            icon: Icons.photo_camera,
+            titleColor: Colors.black,
+            onTap: () {},
+          ),
+        ),
+        SizedBox(width: 12.w),
+        Expanded(
+          child: Column(
+            children: [
+              _ActionTile(
+                height: 72.h,
+                color: const Color(0xFF22312A),
+                title: '新建脚本',
+                subtitle: '创建自己的脚本',
+                icon: Icons.create,
+                onTap: () {},
+              ),
+              SizedBox(height: 6.h),
+              _ActionTile(
+                height: 72.h,
+                color: const Color(0xFF22312A),
+                title: '文件导入',
+                subtitle: '可导入文稿/视频素材',
+                icon: Icons.upload_file,
+                onTap: () {},
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ActionTile extends StatelessWidget {
+  final double height;
+  final Color color;
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color? titleColor;
+  final VoidCallback onTap;
+  const _ActionTile({
+    required this.height,
+    required this.color,
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.onTap,
+    this.titleColor,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: height,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16.r),
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(16.r),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 44.w,
+                height: 44.w,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Icon(icon, color: Colors.white, size: 26.sp),
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                        color: titleColor ?? Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ShortcutRow extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final items = const [
+      _ShortcutItem(icon: Icons.report_gmailerrorred, label: '敏感词检测'),
+      _ShortcutItem(icon: Icons.article_outlined, label: '文案提取'),
+      _ShortcutItem(icon: Icons.auto_fix_high, label: 'AI 删除'),
+      _ShortcutItem(icon: Icons.smart_toy_outlined, label: '数字人'),
+      _ShortcutItem(icon: Icons.more_horiz, label: '更多'),
+    ];
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: items
+          .map((e) => Expanded(child: Center(child: e)))
+          .toList(growable: false),
+    );
+  }
+}
+
+class _ShortcutItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  const _ShortcutItem({required this.icon, required this.label});
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 42.w,
+          height: 42.w,
+          decoration: BoxDecoration(
+            color: const Color(0xFF22312A),
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          child: Icon(icon, color: Colors.white, size: 24.sp),
+        ),
+        SizedBox(height: 6.h),
+        Text(
+          label,
+          style: TextStyle(color: Colors.white70, fontSize: 12.sp),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+  }
+}
+
+class _ScriptsSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: TabBar(
+                  labelColor: Colors.white,
+                  unselectedLabelColor: Colors.white54,
+                  indicatorColor: const Color(0xFF31D790),
+                  tabs: const [
+                    Tab(text: '我的脚本'),
+                    Tab(text: '热门脚本库'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12.h),
+          SizedBox(
+            height: 320.h,
+            child: TabBarView(
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                _ScriptList(items: _dummyScripts()),
+                _ScriptList(items: _dummyScripts(popular: true)),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
+
+  List<_ScriptData> _dummyScripts({bool popular = false}) {
+    return List.generate(3, (i) {
+      return _ScriptData(
+        title: popular ? '热门脚本示例 ${i + 1}' : '普通人如何拍出10W+4步口播流程',
+        desc:
+            '声智提词器是一款智能提词工具，适用于多场景，如直播、会议、在线录播、视频拍摄、演讲等等。',
+        time: '今天 12:32',
+        stats: '498字 建议录制 1 分 23秒',
+      );
+    });
+  }
+}
+
+class _ScriptList extends StatelessWidget {
+  final List<_ScriptData> items;
+  const _ScriptList({required this.items});
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: items.length,
+      separatorBuilder: (_, __) => SizedBox(height: 10.h),
+      itemBuilder: (context, index) {
+        final item = items[index];
+        return _ScriptCard(data: item);
+      },
+    );
+  }
+}
+
+class _ScriptCard extends StatelessWidget {
+  final _ScriptData data;
+  const _ScriptCard({required this.data});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(12.w),
+      decoration: BoxDecoration(
+        color: const Color(0xFF121416),
+        borderRadius: BorderRadius.circular(16.r),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  data.title,
+                  style: TextStyle(color: Colors.white, fontSize: 16.sp, fontWeight: FontWeight.w600),
+                ),
+              ),
+              Icon(Icons.more_horiz, color: Colors.white54),
+            ],
+          ),
+          SizedBox(height: 4.h),
+          Text(
+            data.desc,
+            style: TextStyle(color: Colors.white70, fontSize: 12.sp),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          SizedBox(height: 8.h),
+          Row(
+            children: [
+              Text(data.time, style: TextStyle(color: Colors.white54, fontSize: 12.sp)),
+              SizedBox(width: 12.w),
+              Text(data.stats, style: TextStyle(color: Colors.white54, fontSize: 12.sp)),
+              const Spacer(),
+              SizedBox(
+                height: 28.h,
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF31D790),
+                    padding: EdgeInsets.symmetric(horizontal: 12.w),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999.r)),
+                  ),
+                  child: Text('去提词', style: TextStyle(color: Colors.black87, fontSize: 12.sp)),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ScriptData {
+  final String title;
+  final String desc;
+  final String time;
+  final String stats;
+  _ScriptData({required this.title, required this.desc, required this.time, required this.stats});
 }
