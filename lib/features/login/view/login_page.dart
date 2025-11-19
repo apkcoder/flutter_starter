@@ -2,8 +2,10 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'dart:async';
 
 import '../../../common/widgets/app_button.dart';
+import '../../../common/utils/app_utils.dart';
 import '../view_model/login_view_model.dart';
 
 /// 登录页面
@@ -19,12 +21,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
+  int _countdown = 0;
+  Timer? _timer;
 
   @override
   void dispose() {
     _usernameController.dispose();
     _passwordController.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -34,15 +38,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final loginNotifier = ref.read(loginViewModelProvider.notifier);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(24.w),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
                 SizedBox(height: 60.h),
                 
                 // Logo 和标题
@@ -80,17 +86,21 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 
                 SizedBox(height: 48.h),
                 
-                // 用户名输入框
+                // 手机号输入框
                 TextFormField(
                   controller: _usernameController,
+                  keyboardType: TextInputType.phone,
                   decoration: const InputDecoration(
-                    labelText: '用户名',
-                    hintText: '请输入用户名',
-                    prefixIcon: Icon(Icons.person_outline),
+                    labelText: '手机号',
+                    hintText: '请输入手机号',
+                    prefixIcon: Icon(Icons.phone_outlined),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return '请输入用户名';
+                      return '请输入手机号';
+                    }
+                    if (!AppUtils.isValidPhone(value)) {
+                      return '请输入有效的手机号';
                     }
                     return null;
                   },
@@ -98,31 +108,30 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 
                 SizedBox(height: 16.h),
                 
-                // 密码输入框
+                // 验证码输入框
                 TextFormField(
                   controller: _passwordController,
-                  obscureText: _obscurePassword,
+                  keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    labelText: '密码',
-                    hintText: '请输入密码',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                    labelText: '验证码',
+                    hintText: '请输入验证码',
+                    prefixIcon: const Icon(Icons.sms_outlined),
+                    suffixIcon: TextButton(
+                      onPressed: (_countdown > 0 || loginState.isLoading)
+                          ? null
+                          : _handleSendCode,
+                      child: Text(
+                        _countdown > 0 ? '重新发送(${_countdown}s)' : '获取验证码',
+                        style: TextStyle(fontSize: 12.sp),
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
                     ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return '请输入密码';
+                      return '请输入验证码';
                     }
-                    if (value.length < 6) {
-                      return '密码长度不能少于6位';
+                    if (!RegExp(r'^\d{4,6}$').hasMatch(value)) {
+                      return '请输入4-6位数字验证码';
                     }
                     return null;
                   },
@@ -155,7 +164,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                 ),
                 
-                const Spacer(),
+                SizedBox(height: 24.h),
                 
                 // 注册提示
                 Row(
@@ -183,7 +192,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     ),
                   ],
                 ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -200,5 +210,34 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         password: _passwordController.text.trim(),
       );
     }
+  }
+
+  void _handleSendCode() {
+    final phone = _usernameController.text.trim();
+    if (!AppUtils.isValidPhone(phone)) {
+      AppUtils.showError('请输入有效的手机号');
+      return;
+    }
+    AppUtils.showSuccess('验证码已发送');
+    _startCountdown();
+  }
+
+  void _startCountdown() {
+    _timer?.cancel();
+    setState(() {
+      _countdown = 60;
+    });
+    _timer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (_countdown <= 1) {
+        t.cancel();
+        setState(() {
+          _countdown = 0;
+        });
+      } else {
+        setState(() {
+          _countdown -= 1;
+        });
+      }
+    });
   }
 }

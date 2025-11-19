@@ -26,6 +26,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
+      scaffoldBackgroundColor: Colors.black,
       
       // 颜色方案
       colorScheme: const ColorScheme.light(
@@ -170,6 +171,42 @@ class AppTheme {
         color: dividerColor,
         thickness: 0.5,
       ),
+
+      // 底部导航主题（对齐 Figma 视觉）
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: surfaceColor,
+        indicatorColor: primaryColor.withValues(alpha: 0.12),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return IconThemeData(
+            color: selected ? primaryColor : textSecondary,
+            size: 24.sp,
+          );
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return TextStyle(
+            fontSize: 12.sp,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+            color: selected ? primaryColor : textSecondary,
+          );
+        }),
+      ),
+
+      extensions: const [
+        AppBottomBarTheme(
+          background: Color(0xD9000000),
+          pill: Color(0xFF35F29C),
+          pillAlpha: 0.0,
+          iconSelected: Color(0xFF35F29C),
+          iconUnselected: Color(0x99FFFFFF),
+          textSelected: Color(0xFF35F29C),
+          textUnselected: Color(0x99FFFFFF),
+          shadowColor: Color(0x1A000000),
+          blurSigma: 12,
+          height: 80,
+        ),
+      ],
     );
   }
   
@@ -178,6 +215,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
+      scaffoldBackgroundColor: Colors.black,
       
       // 颜色方案
       colorScheme: const ColorScheme.dark(
@@ -189,6 +227,111 @@ class AppTheme {
       
       // 其他主题配置与浅色主题类似，但使用深色配色
       // 这里简化处理，实际项目中可以详细配置
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: const Color(0xFF1E1E1E),
+        indicatorColor: primaryColorLight.withValues(alpha: 0.16),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return IconThemeData(
+            color: selected ? primaryColorLight : Colors.grey[400],
+            size: 24.sp,
+          );
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return TextStyle(
+            fontSize: 12.sp,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+            color: selected ? primaryColorLight : Colors.grey[400],
+          );
+        }),
+      ),
+
+      extensions: const [
+        AppBottomBarTheme(
+          background: Color(0xD9000000),
+          pill: Color(0xFF35F29C),
+          pillAlpha: 0.0,
+          iconSelected: Color(0xFF35F29C),
+          iconUnselected: Color(0x99FFFFFF),
+          textSelected: Color(0xFF35F29C),
+          textUnselected: Color(0x99FFFFFF),
+          shadowColor: Color(0x33000000),
+          blurSigma: 12,
+          height: 80,
+        ),
+      ],
+    );
+  }
+}
+
+@immutable
+class AppBottomBarTheme extends ThemeExtension<AppBottomBarTheme> {
+  final Color background;
+  final Color pill;
+  final double pillAlpha;
+  final Color iconSelected;
+  final Color iconUnselected;
+  final Color textSelected;
+  final Color textUnselected;
+  final Color shadowColor;
+  final double blurSigma;
+  final double height;
+
+  const AppBottomBarTheme({
+    required this.background,
+    required this.pill,
+    required this.pillAlpha,
+    required this.iconSelected,
+    required this.iconUnselected,
+    required this.textSelected,
+    required this.textUnselected,
+    required this.shadowColor,
+    required this.blurSigma,
+    required this.height,
+  });
+
+  @override
+  AppBottomBarTheme copyWith({
+    Color? background,
+    Color? pill,
+    double? pillAlpha,
+    Color? iconSelected,
+    Color? iconUnselected,
+    Color? textSelected,
+    Color? textUnselected,
+    Color? shadowColor,
+    double? blurSigma,
+    double? height,
+  }) {
+    return AppBottomBarTheme(
+      background: background ?? this.background,
+      pill: pill ?? this.pill,
+      pillAlpha: pillAlpha ?? this.pillAlpha,
+      iconSelected: iconSelected ?? this.iconSelected,
+      iconUnselected: iconUnselected ?? this.iconUnselected,
+      textSelected: textSelected ?? this.textSelected,
+      textUnselected: textUnselected ?? this.textUnselected,
+      shadowColor: shadowColor ?? this.shadowColor,
+      blurSigma: blurSigma ?? this.blurSigma,
+      height: height ?? this.height,
+    );
+  }
+
+  @override
+  AppBottomBarTheme lerp(ThemeExtension<AppBottomBarTheme>? other, double t) {
+    if (other is! AppBottomBarTheme) return this;
+    return AppBottomBarTheme(
+      background: Color.lerp(background, other.background, t) ?? background,
+      pill: Color.lerp(pill, other.pill, t) ?? pill,
+      pillAlpha: pillAlpha + (other.pillAlpha - pillAlpha) * t,
+      iconSelected: Color.lerp(iconSelected, other.iconSelected, t) ?? iconSelected,
+      iconUnselected: Color.lerp(iconUnselected, other.iconUnselected, t) ?? iconUnselected,
+      textSelected: Color.lerp(textSelected, other.textSelected, t) ?? textSelected,
+      textUnselected: Color.lerp(textUnselected, other.textUnselected, t) ?? textUnselected,
+      shadowColor: Color.lerp(shadowColor, other.shadowColor, t) ?? shadowColor,
+      blurSigma: blurSigma + (other.blurSigma - blurSigma) * t,
+      height: height + (other.height - height) * t,
     );
   }
 }

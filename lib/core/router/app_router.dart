@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 
 import '../../features/login/view/login_page.dart';
 import '../../features/home/view/home_page.dart';
+import '../../features/main/view/main_tabs_page.dart';
 import '../../features/splash/view/splash_page.dart';
 import '../../features/profile/view/profile_page.dart';
 import '../../features/settings/view/settings_page.dart';
@@ -27,33 +28,14 @@ class AppRouter extends RootStackRouter {
       page: LoginRoute.page,
     ),
 
-    // 主页
     AutoRoute(
-      page: HomeRoute.page,
+      page: MainTabsRoute.page,
       guards: [AuthGuard()],
-    ),
-
-    // 个人中心
-    AutoRoute(
-      page: ProfileRoute.page,
-      guards: [AuthGuard()],
-    ),
-
-    // 设置
-    AutoRoute(
-      page: SettingsRoute.page,
-      guards: [AuthGuard()],
-    ),
-
-    // 消息通知
-    AutoRoute(
-      page: NotificationsRoute.page,
-      guards: [AuthGuard()],
-    ),
-
-    // 帮助中心
-    AutoRoute(
-      page: HelpRoute.page,
+      children: [
+        AutoRoute(page: HomeRoute.page),
+        AutoRoute(page: HelpRoute.page),
+        AutoRoute(page: ProfileRoute.page),
+      ],
     ),
   ];
 }

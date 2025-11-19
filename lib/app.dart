@@ -20,7 +20,7 @@ class App extends ConsumerWidget {
       // 主题配置
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.dark,
 
       // 国际化配置
       localizationsDelegates: AppLocalizations.localizationsDelegates,

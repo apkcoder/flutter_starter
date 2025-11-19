@@ -27,8 +27,8 @@ class AppConfig {
     _instance = AppConfig._(
       environment: kDebugMode ? 'dev' : 'prod',
       baseUrl: kDebugMode 
-        ? 'https://dev-api.roboshineapp.com/'
-        : 'https://api.roboshineapp.com/',
+        ? 'https://api.lusun.cn/'
+        : 'https://api.lusun.com/',
       enableLog: kDebugMode,
       enableCrashReport: !kDebugMode,
       connectTimeout: 15000,

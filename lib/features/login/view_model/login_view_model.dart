@@ -6,6 +6,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import '../../../core/log/app_logger.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/storage/storage_manager.dart';
+import '../data/login_repository.dart';
+import '../data/models/login_models.dart';
 
 /// 登录状态
 class LoginState {
@@ -31,6 +33,7 @@ class LoginState {
 /// 登录 ViewModel
 class LoginViewModel extends StateNotifier<LoginState> {
   LoginViewModel() : super(const LoginState());
+  final LoginRepository _repository = LoginRepository();
 
   /// 登录
   Future<void> login({
@@ -44,41 +47,15 @@ class LoginViewModel extends StateNotifier<LoginState> {
 
     try {
       AppLogger.info('开始登录: $username');
-
-      // 模拟网络请求
-      await Future.delayed(const Duration(seconds: 2));
-
-      // 简单的模拟登录验证
-      if (username == 'admin' && password == '123456') {
-        // 登录成功，保存用户信息
-        await _saveUserData(username);
-
-        AppLogger.info('登录成功: $username');
-        Fluttertoast.showToast(msg: '登录成功');
-
-        // 跳转到主页
-        if (context.mounted) {
-          context.router.replace(const HomeRoute());
-        }
-      } else {
-        throw Exception('用户名或密码错误');
+      final req = LoginRequest(phone: username, code: password);
+      final resp = await _repository.login(req);
+      await StorageManager.saveToken(resp.token);
+      await StorageManager.saveUserInfo(resp.user);
+      AppLogger.info('登录成功: $username');
+      Fluttertoast.showToast(msg: '登录成功');
+      if (context.mounted) {
+        context.router.replace(const MainTabsRoute());
       }
-
-      // 实际项目中的网络请求示例：
-      /*
-      final response = await NetworkManager.post('/auth/login', data: {
-        'username': username,
-        'password': password,
-      });
-
-      if (response.statusCode == 200) {
-        final data = response.data;
-        await _saveUserData(data['user'], data['token']);
-        if (context.mounted) {
-          context.router.replace(const HomeRoute());
-        }
-      }
-      */
 
     } catch (e) {
       AppLogger.error('登录失败', error: e);
@@ -94,22 +71,7 @@ class LoginViewModel extends StateNotifier<LoginState> {
   }
 
   /// 保存用户数据
-  Future<void> _saveUserData(String username) async {
-    // 保存 Token
-    await StorageManager.saveToken('mock_token_${DateTime.now().millisecondsSinceEpoch}');
-
-    // 保存用户信息
-    await StorageManager.saveUserInfo({
-      'id': 1,
-      'username': username,
-      'nickname': '用户$username',
-      'avatar': '',
-      'email': '$username@example.com',
-      'loginTime': DateTime.now().toIso8601String(),
-    });
-
-    state = state.copyWith(isLoading: false);
-  }
+  
 
   /// 清除错误
   void clearError() {

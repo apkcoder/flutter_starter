@@ -67,6 +67,25 @@ class LoginRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [MainTabsPage]
+class MainTabsRoute extends PageRouteInfo<void> {
+  const MainTabsRoute({List<PageRouteInfo>? children})
+      : super(
+          MainTabsRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'MainTabsRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const MainTabsPage();
+    },
+  );
+}
+
+/// generated route for
 /// [NotificationsPage]
 class NotificationsRoute extends PageRouteInfo<void> {
   const NotificationsRoute({List<PageRouteInfo>? children})

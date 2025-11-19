@@ -44,134 +44,135 @@ class _HomePageState extends ConsumerState<HomePage> {
       ),
       body: Padding(
         padding: EdgeInsets.all(16.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // 用户信息卡片
-            Card(
-              child: Padding(
-                padding: EdgeInsets.all(16.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 30.r,
-                          backgroundColor: Theme.of(context).colorScheme.primary,
-                          child: Icon(
-                            Icons.person,
-                            size: 30.sp,
-                            color: Colors.white,
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Card(
+                child: Padding(
+                  padding: EdgeInsets.all(16.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 30.r,
+                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            child: Icon(
+                              Icons.person,
+                              size: 30.sp,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                        SizedBox(width: 16.w),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                userInfo?['nickname'] ?? '未知用户',
-                                style: Theme.of(context).textTheme.headlineSmall,
-                              ),
-                              SizedBox(height: 4.h),
-                              Text(
-                                userInfo?['email'] ?? '',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Colors.grey[600],
+                          SizedBox(width: 16.w),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  userInfo?['nickname'] ?? '未知用户',
+                                  style: Theme.of(context).textTheme.headlineSmall,
                                 ),
-                              ),
-                            ],
+                                SizedBox(height: 4.h),
+                                Text(
+                                  userInfo?['email'] ?? '',
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 16.h),
-                    Text(
-                      '登录时间: ${_formatLoginTime()}',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
+                        ],
+                      ),
+                      SizedBox(height: 16.h),
+                      Text(
+                        '登录时间: ${_formatLoginTime()}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-            
-            SizedBox(height: 24.h),
-            
-            // 功能模块
-            Text(
-              '功能模块',
-              style: Theme.of(context).textTheme.headlineSmall,
+
+            SliverToBoxAdapter(child: SizedBox(height: 24.h)),
+
+            SliverToBoxAdapter(
+              child: Text(
+                '功能模块',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
             ),
-            
-            SizedBox(height: 16.h),
-            
-            // 功能网格
-            Expanded(
-              child: GridView.count(
+
+            SliverToBoxAdapter(child: SizedBox(height: 16.h)),
+
+            SliverGrid(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 16.w,
                 mainAxisSpacing: 16.h,
                 childAspectRatio: 1.2,
-                children: [
-                  _buildFeatureCard(
-                    icon: Icons.person_outline,
-                    title: '个人中心',
-                    subtitle: '查看个人信息',
-                    onTap: () {
-                      context.router.push(const ProfileRoute());
-                    },
-                  ),
-                  _buildFeatureCard(
-                    icon: Icons.settings_outlined,
-                    title: '系统设置',
-                    subtitle: '应用设置管理',
-                    onTap: () {
-                      context.router.push(const SettingsRoute());
-                    },
-                  ),
-                  _buildFeatureCard(
-                    icon: Icons.notifications_outlined,
-                    title: '消息通知',
-                    subtitle: '查看系统消息',
-                    onTap: () {
-                      context.router.push(const NotificationsRoute());
-                    },
-                  ),
-                  _buildFeatureCard(
-                    icon: Icons.help_outline,
-                    title: '帮助中心',
-                    subtitle: '使用帮助文档',
-                    onTap: () {
-                      context.router.push(const HelpRoute());
-                    },
-                  ),
-                ],
               ),
+              delegate: SliverChildListDelegate([
+                _buildFeatureCard(
+                  icon: Icons.person_outline,
+                  title: '个人中心',
+                  subtitle: '查看个人信息',
+                  onTap: () {
+                    context.router.push(const ProfileRoute());
+                  },
+                ),
+                _buildFeatureCard(
+                  icon: Icons.settings_outlined,
+                  title: '系统设置',
+                  subtitle: '应用设置管理',
+                  onTap: () {
+                    context.router.push(const SettingsRoute());
+                  },
+                ),
+                _buildFeatureCard(
+                  icon: Icons.notifications_outlined,
+                  title: '消息通知',
+                  subtitle: '查看系统消息',
+                  onTap: () {
+                    context.router.push(const NotificationsRoute());
+                  },
+                ),
+                _buildFeatureCard(
+                  icon: Icons.help_outline,
+                  title: '帮助中心',
+                  subtitle: '使用帮助文档',
+                  onTap: () {
+                    context.router.push(const HelpRoute());
+                  },
+                ),
+              ]),
             ),
-            
-            SizedBox(height: 24.h),
-            
-            // 框架信息
-            Card(
-              child: Padding(
-                padding: EdgeInsets.all(16.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Flutter Rapid Framework',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      '🎯 高内聚，低耦合的模块化架构\n'
-                      '⚡ 配置即约定，快速开发\n'
-                      '🔧 插件化设计，易于扩展\n'
-                      '🚀 专注业务，屏蔽底层实现',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
+
+            SliverToBoxAdapter(child: SizedBox(height: 24.h)),
+
+            SliverToBoxAdapter(
+              child: Card(
+                child: Padding(
+                  padding: EdgeInsets.all(16.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Flutter Rapid Framework',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      SizedBox(height: 8.h),
+                      Text(
+                        '🎯 高内聚，低耦合的模块化架构\n'
+                        '⚡ 配置即约定，快速开发\n'
+                        '🔧 插件化设计，易于扩展\n'
+                        '🚀 专注业务，屏蔽底层实现',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
