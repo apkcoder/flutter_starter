@@ -195,7 +195,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Flutter Rapid Framework'),
+            const Text('芦笋提词器'),
             SizedBox(height: 8.h),
             const Text('版本: 1.0.0'),
             SizedBox(height: 8.h),

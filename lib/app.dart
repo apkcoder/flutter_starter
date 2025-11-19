@@ -14,7 +14,7 @@ class App extends ConsumerWidget {
     final appRouter = AppRouter();
 
     return MaterialApp.router(
-      title: 'Flutter Rapid Framework',
+      title: '芦笋提词器',
       debugShowCheckedModeBanner: false,
 
       // 主题配置
