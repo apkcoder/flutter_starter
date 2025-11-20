@@ -31,7 +31,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           SliverAppBar(
             pinned: false,
             floating: false,
-            expandedHeight: 260.h,
+            expandedHeight: 200.h,
             backgroundColor: Colors.black,
             automaticallyImplyLeading: false,
             flexibleSpace: FlexibleSpaceBar(
@@ -111,19 +111,20 @@ class _BannerHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+        gradient: RadialGradient(
+          center: const Alignment(0.6, -0.8),
+          radius: 1.0,
           colors: [
-            const Color(0xFF0C0F10),
+            const Color(0xFF0B3D2E),
             const Color(0xFF0C0F10),
           ],
+          stops: const [0.0, 1.0],
         ),
       ),
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 12.h),
+          padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 20.h),
           child: SizedBox(
             height: 160.h,
             width: double.infinity,
@@ -132,30 +133,31 @@ class _BannerHeader extends StatelessWidget {
                 final tipsWidth = 185.w;
                 final tipsHeight = 80.h;
                 final personWidth = 200.w;
-                final personHeight = 152.h;
                 return Stack(
                   clipBehavior: Clip.none,
                   children: [
                     Positioned(
                       left: 0,
-                      top: 16.h,
+                      top: 0,
+                      bottom: 0,
                       width: tipsWidth,
-                      height: tipsHeight,
-                      child: Image.asset(
-                        'assets/images/img_home_tips.png',
-                        fit: BoxFit.contain,
-                        alignment: Alignment.centerLeft,
+                      child: Center(
+                        child: Image.asset(
+                          'assets/images/img_home_tips.png',
+                          fit: BoxFit.contain,
+                          alignment: Alignment.centerLeft,
+                        ),
                       ),
                     ),
                     Positioned(
-                      right: 8.w,
-                      top: 16.h,
+                      right: -8.w,
+                      top: 20.h,
+                      bottom: -24.h,
                       width: personWidth,
-                      height: personHeight,
                       child: Image.asset(
                         'assets/images/img_home_people.png',
                         fit: BoxFit.contain,
-                        alignment: Alignment.topRight,
+                        alignment: Alignment.bottomRight,
                       ),
                     ),
                   ],
@@ -197,11 +199,16 @@ class _PrimaryActions extends StatelessWidget {
         Expanded(
           child: _ActionTile(
             height: 150.h,
-            color: primaryColor,
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF42F2A5), Color(0xFF22C582)],
+            ),
             title: '开始拍摄',
-            subtitle: '即刻开启高效提词',
-            icon: Icons.photo_camera,
-            titleColor: Colors.black,
+            subtitle: '即刻拍摄\n属于你的高光时刻',
+            icon: Icons.camera_alt_rounded,
+            titleColor: Colors.white,
+            iconColor: Colors.white,
             onTap: () {},
           ),
         ),
@@ -211,19 +218,21 @@ class _PrimaryActions extends StatelessWidget {
             children: [
               _ActionTile(
                 height: 72.h,
-                color: const Color(0xFF22312A),
+                color: const Color(0xFF1E2022),
                 title: '新建脚本',
-                subtitle: '创建自己的脚本',
-                icon: Icons.create,
+                subtitle: '创建属于自己的脚本',
+                icon: Icons.edit_note_rounded,
+                iconBackgroundColor: const Color(0xFF31D790),
                 onTap: () {},
               ),
               SizedBox(height: 6.h),
               _ActionTile(
                 height: 72.h,
-                color: const Color(0xFF22312A),
+                color: const Color(0xFF1E2022),
                 title: '文件导入',
-                subtitle: '可导入文稿/视频素材',
-                icon: Icons.upload_file,
+                subtitle: '可文件导入视频/脚本素材',
+                icon: Icons.file_download_outlined, // Use a more appropriate icon if possible
+                iconBackgroundColor: const Color(0xFF4E86F6), // Blueish for import
                 onTap: () {},
               ),
             ],
@@ -236,72 +245,88 @@ class _PrimaryActions extends StatelessWidget {
 
 class _ActionTile extends StatelessWidget {
   final double height;
-  final Color color;
+  final Color? color;
+  final Gradient? gradient;
   final String title;
   final String subtitle;
   final IconData icon;
   final Color? titleColor;
+  final Color? iconColor;
+  final Color? iconBackgroundColor;
   final VoidCallback onTap;
   const _ActionTile({
     required this.height,
-    required this.color,
+    this.color,
+    this.gradient,
     required this.title,
     required this.subtitle,
     required this.icon,
     required this.onTap,
     this.titleColor,
+    this.iconColor,
+    this.iconBackgroundColor,
   });
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: height,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16.r),
-        onTap: onTap,
-        child: Container(
-          padding: EdgeInsets.all(16.w),
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(16.r),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                width: 44.w,
-                height: 44.w,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Icon(icon, color: Colors.white, size: 26.sp),
-              ),
-              SizedBox(width: 12.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: titleColor ?? Colors.white,
-                      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: color,
+          gradient: gradient,
+          borderRadius: BorderRadius.circular(24.r),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(24.r),
+            onTap: onTap,
+            child: Padding(
+              padding: EdgeInsets.all(16.w),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 40.w,
+                    height: 40.w,
+                    decoration: BoxDecoration(
+                      color: iconBackgroundColor ?? Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12.r),
                     ),
-                    SizedBox(height: 4.h),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: Colors.white70,
-                      ),
+                    child: Icon(icon, color: iconColor ?? Colors.white, size: 22.sp),
+                  ),
+                  SizedBox(width: 10.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                            color: titleColor ?? Colors.white,
+                          ),
+                        ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          subtitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            color: (titleColor ?? Colors.white).withOpacity(0.7),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -337,16 +362,8 @@ class _ShortcutItem extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: 42.w,
-          height: 42.w,
-          decoration: BoxDecoration(
-            color: const Color(0xFF22312A),
-            borderRadius: BorderRadius.circular(12.r),
-          ),
-          child: Icon(icon, color: Colors.white, size: 24.sp),
-        ),
-        SizedBox(height: 6.h),
+        Icon(icon, color: Colors.white, size: 28.sp),
+        SizedBox(height: 8.h),
         Text(
           label,
           style: TextStyle(color: Colors.white70, fontSize: 12.sp),
@@ -368,10 +385,15 @@ class _ScriptsSection extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: TabBar(
+                child:               TabBar(
                   labelColor: Colors.white,
+                  labelStyle: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
                   unselectedLabelColor: Colors.white54,
+                  unselectedLabelStyle: TextStyle(fontSize: 16.sp),
                   indicatorColor: const Color(0xFF31D790),
+                  indicatorSize: TabBarIndicatorSize.label,
+                  indicatorWeight: 3,
+                  dividerColor: Colors.transparent,
                   tabs: const [
                     Tab(text: '我的脚本'),
                     Tab(text: '热门脚本库'),
@@ -432,7 +454,7 @@ class _ScriptCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(12.w),
+      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: const Color(0xFF121416),
         borderRadius: BorderRadius.circular(16.r),
@@ -467,14 +489,14 @@ class _ScriptCard extends StatelessWidget {
               const Spacer(),
               SizedBox(
                 height: 28.h,
-                child: ElevatedButton(
+                child: OutlinedButton(
                   onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF31D790),
-                    padding: EdgeInsets.symmetric(horizontal: 12.w),
+                  style: OutlinedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    side: const BorderSide(color: Color(0xFF31D790)),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999.r)),
                   ),
-                  child: Text('去提词', style: TextStyle(color: Colors.black87, fontSize: 12.sp)),
+                  child: Text('去提词', style: TextStyle(color: const Color(0xFF31D790), fontSize: 12.sp)),
                 ),
               ),
             ],
