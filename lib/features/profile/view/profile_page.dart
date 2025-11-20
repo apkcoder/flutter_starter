@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/storage/storage_manager.dart';
+import '../../../core/router/app_router.dart';
 
 /// 个人中心页面
 @RoutePage()
@@ -16,17 +17,45 @@ class ProfilePage extends ConsumerStatefulWidget {
 
 class _ProfilePageState extends ConsumerState<ProfilePage> {
   Map<String, dynamic>? userInfo;
+  bool _isLoggedIn = false;
 
   @override
   void initState() {
     super.initState();
     _loadUserInfo();
+    _loadLoginState();
   }
 
   /// 加载用户信息
   void _loadUserInfo() {
     userInfo = StorageManager.getUserInfo();
     setState(() {});
+  }
+
+  Future<void> _loadLoginState() async {
+    final loggedIn = await StorageManager.isLoggedIn();
+    if (mounted) {
+      setState(() {
+        _isLoggedIn = loggedIn;
+      });
+    }
+  }
+
+  Future<void> _handleLogin() async {
+    if (!mounted) return;
+    context.router.push(const LoginRoute());
+  }
+
+  Future<void> _handleLogout() async {
+    await StorageManager.clearToken();
+    await StorageManager.clearUserInfo();
+    if (mounted) {
+      _loadUserInfo();
+      _loadLoginState();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('已退出登录')),
+      );
+    }
   }
 
   @override
@@ -102,24 +131,25 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
             // 操作选项
             _buildInfoSection('账户管理', [
+              if (!_isLoggedIn)
+                _buildActionItem(Icons.login, '登录', _handleLogin),
               _buildActionItem(Icons.edit_outlined, '编辑资料', () {
-                // TODO: 跳转到编辑资料页面
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('编辑资料功能开发中')),
                 );
               }),
               _buildActionItem(Icons.lock_outline, '修改密码', () {
-                // TODO: 跳转到修改密码页面
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('修改密码功能开发中')),
                 );
               }),
               _buildActionItem(Icons.privacy_tip_outlined, '隐私设置', () {
-                // TODO: 跳转到隐私设置页面
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('隐私设置功能开发中')),
                 );
               }),
+              if (_isLoggedIn)
+                _buildActionItem(Icons.logout, '退出登录', _handleLogout),
             ]),
           ],
         ),

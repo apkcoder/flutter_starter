@@ -290,7 +290,7 @@ class _ActionTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(24.r),
             onTap: onTap,
             child: Padding(
-              padding: EdgeInsets.all(16.w),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
               child: isVertical ? _buildVerticalLayout() : _buildHorizontalLayout(),
             ),
           ),
@@ -305,7 +305,7 @@ class _ActionTile extends StatelessWidget {
       children: [
         _buildIcon(),
         const Spacer(),
-        _buildTextContent(),
+        _buildTextContent(lines: 2),
       ],
     );
   }
@@ -316,7 +316,7 @@ class _ActionTile extends StatelessWidget {
       children: [
         _buildIcon(),
         SizedBox(width: 10.w),
-        Expanded(child: _buildTextContent()),
+        Expanded(child: _buildTextContent(lines: 1)),
       ],
     );
   }
@@ -341,10 +341,11 @@ class _ActionTile extends StatelessWidget {
     );
   }
 
-  Widget _buildTextContent() {
+  Widget _buildTextContent({int lines = 2}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           title,
@@ -359,7 +360,7 @@ class _ActionTile extends StatelessWidget {
         SizedBox(height: 4.h),
         Text(
           subtitle,
-          maxLines: 2,
+          maxLines: lines,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             fontSize: 11.sp,

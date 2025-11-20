@@ -30,7 +30,6 @@ class AppRouter extends RootStackRouter {
 
     AutoRoute(
       page: MainTabsRoute.page,
-      guards: [AuthGuard()],
       children: [
         AutoRoute(page: HomeRoute.page),
         AutoRoute(page: HelpRoute.page),

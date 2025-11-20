@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/router/app_router.dart';
-import '../../../core/storage/storage_manager.dart';
 
 /// 启动页
 @RoutePage()
@@ -29,13 +28,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
 
     if (!mounted) return;
 
-    // 检查登录状态并跳转
-    final isLoggedIn = await StorageManager.isLoggedIn();
-    if (isLoggedIn) {
-      context.router.replace(const HomeRoute());
-    } else {
-      context.router.replace(const LoginRoute());
-    }
+    context.router.replace(const MainTabsRoute());
   }
 
   @override
