@@ -199,16 +199,12 @@ class _PrimaryActions extends StatelessWidget {
         Expanded(
           child: _ActionTile(
             height: 150.h,
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF42F2A5), Color(0xFF22C582)],
-            ),
+            backgroundImage: 'assets/images/img_home_camera_bg.png',
             title: '开始拍摄',
-            subtitle: '即刻拍摄\n属于你的高光时刻',
-            icon: Icons.camera_alt_rounded,
+            subtitle: '即刻拍摄属于你的高光时刻',
+            iconAsset: 'assets/images/img_home_camera.png',
             titleColor: Colors.white,
-            iconColor: Colors.white,
+            isVertical: true, // New flag for vertical layout
             onTap: () {},
           ),
         ),
@@ -221,8 +217,7 @@ class _PrimaryActions extends StatelessWidget {
                 color: const Color(0xFF1E2022),
                 title: '新建脚本',
                 subtitle: '创建属于自己的脚本',
-                icon: Icons.edit_note_rounded,
-                iconBackgroundColor: const Color(0xFF31D790),
+                iconAsset: 'assets/images/img_home_create_script.png',
                 onTap: () {},
               ),
               SizedBox(height: 6.h),
@@ -231,8 +226,7 @@ class _PrimaryActions extends StatelessWidget {
                 color: const Color(0xFF1E2022),
                 title: '文件导入',
                 subtitle: '可文件导入视频/脚本素材',
-                icon: Icons.file_download_outlined, // Use a more appropriate icon if possible
-                iconBackgroundColor: const Color(0xFF4E86F6), // Blueish for import
+                iconAsset: 'assets/images/img_home_import.png',
                 onTap: () {},
               ),
             ],
@@ -247,25 +241,33 @@ class _ActionTile extends StatelessWidget {
   final double height;
   final Color? color;
   final Gradient? gradient;
+  final String? backgroundImage;
   final String title;
   final String subtitle;
-  final IconData icon;
+  final IconData? icon;
+  final String? iconAsset;
   final Color? titleColor;
   final Color? iconColor;
   final Color? iconBackgroundColor;
   final VoidCallback onTap;
+  final bool isVertical;
+
   const _ActionTile({
     required this.height,
     this.color,
     this.gradient,
+    this.backgroundImage,
     required this.title,
     required this.subtitle,
-    required this.icon,
+    this.icon,
+    this.iconAsset,
     required this.onTap,
     this.titleColor,
     this.iconColor,
     this.iconBackgroundColor,
+    this.isVertical = false,
   });
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -275,6 +277,12 @@ class _ActionTile extends StatelessWidget {
           color: color,
           gradient: gradient,
           borderRadius: BorderRadius.circular(24.r),
+          image: backgroundImage != null
+              ? DecorationImage(
+                  image: AssetImage(backgroundImage!),
+                  fit: BoxFit.cover,
+                )
+              : null,
         ),
         child: Material(
           color: Colors.transparent,
@@ -283,53 +291,82 @@ class _ActionTile extends StatelessWidget {
             onTap: onTap,
             child: Padding(
               padding: EdgeInsets.all(16.w),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 40.w,
-                    height: 40.w,
-                    decoration: BoxDecoration(
-                      color: iconBackgroundColor ?? Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Icon(icon, color: iconColor ?? Colors.white, size: 22.sp),
-                  ),
-                  SizedBox(width: 10.w),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.bold,
-                            color: titleColor ?? Colors.white,
-                          ),
-                        ),
-                        SizedBox(height: 4.h),
-                        Text(
-                          subtitle,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11.sp,
-                            color: (titleColor ?? Colors.white).withOpacity(0.7),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              child: isVertical ? _buildVerticalLayout() : _buildHorizontalLayout(),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildVerticalLayout() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildIcon(),
+        const Spacer(),
+        _buildTextContent(),
+      ],
+    );
+  }
+
+  Widget _buildHorizontalLayout() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        _buildIcon(),
+        SizedBox(width: 10.w),
+        Expanded(child: _buildTextContent()),
+      ],
+    );
+  }
+
+  Widget _buildIcon() {
+    if (iconAsset != null) {
+      return Image.asset(
+        iconAsset!,
+        width: 40.w,
+        height: 40.w,
+        fit: BoxFit.contain,
+      );
+    }
+    return Container(
+      width: 40.w,
+      height: 40.w,
+      decoration: BoxDecoration(
+        color: iconBackgroundColor ?? Colors.white.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(12.r),
+      ),
+      child: Icon(icon, color: iconColor ?? Colors.white, size: 22.sp),
+    );
+  }
+
+  Widget _buildTextContent() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: 16.sp,
+            fontWeight: FontWeight.bold,
+            color: titleColor ?? Colors.white,
+          ),
+        ),
+        SizedBox(height: 4.h),
+        Text(
+          subtitle,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontSize: 11.sp,
+            color: (titleColor ?? Colors.white).withOpacity(0.7),
+          ),
+        ),
+      ],
     );
   }
 }
